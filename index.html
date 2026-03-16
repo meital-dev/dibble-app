@@ -4,7 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dibble Financial Planning Tool</title>
+  <!-- Netlify Identity Widget -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <style>
+    #auth-gate {
+      display: none;
+      position: fixed; inset: 0; z-index: 99999;
+      background: #1a2744;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    #auth-gate.visible { display: flex; }
+    .auth-card {
+      background: #243360;
+      border-radius: 16px;
+      padding: 48px 40px;
+      width: 360px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.4);
+      text-align: center;
+    }
+    .auth-logo {
+      width: 52px; height: 52px; border-radius: 12px;
+      background: #F5A623;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 22px; color: #fff;
+      margin: 0 auto 16px;
+    }
+    .auth-title { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .auth-sub { font-size: 13px; color: rgba(255,255,255,.45); margin-bottom: 32px; letter-spacing: .4px; text-transform: uppercase; }
+    .auth-btn {
+      width: 100%; padding: 14px;
+      background: #2ECC71; color: #1a2744;
+      border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: background .18s, transform .18s;
+    }
+    .auth-btn:hover { background: #27ae60; transform: translateY(-1px); }
+    .auth-error { margin-top: 16px; font-size: 13px; color: #e74c3c; display: none; }
+    .auth-error.visible { display: block; }
+    #app-wrapper { display: none; }
+    #app-wrapper.visible { display: block; }
+  </style>
   <style>
     /* ─── Reset & Base ─────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -535,33 +577,20 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-<div id="auth-gate" style="position:fixed;inset:0;z-index:99999;background:#1a2744;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
-  <div style="background:#E5B94B;border-radius:12px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#1a2744;">d</div>
-  <h1 style="color:#fff;font-size:22px;font-weight:800;font-family:sans-serif;">dibble Business Plan</h1>
-  <p style="color:rgba(255,255,255,.5);font-size:13px;font-family:sans-serif;">Authorized access only</p>
-  <button id="login-btn" style="margin-top:8px;padding:12px 32px;background:#2ECC71;color:#1a2744;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:sans-serif;">Log in</button>
+
+<!-- ── AUTH GATE ─────────────────────────────────────────── -->
+<div id="auth-gate" class="visible">
+  <div class="auth-card">
+    <div class="auth-logo">d</div>
+    <div class="auth-title">dibble</div>
+    <div class="auth-sub">Financial Planning Tool</div>
+    <button class="auth-btn" id="login-btn">Sign In</button>
+    <div class="auth-error" id="auth-error">Access denied. Your account is not authorized.</div>
+  </div>
 </div>
-<script>
-document.addEventListener("DOMContentLoaded",function(){
-  var gate=document.getElementById("auth-gate");
-  if(!window.location.hostname.includes("netlify.app")){return;}
-  var ni=window.netlifyIdentity;
-  // Init first — this auto-handles invite/recovery tokens in URL hash
-  ni.init({APIUrl:"https://dibble-app-business-plan.netlify.app/.netlify/identity"});
-  // If token in URL hash, open widget immediately to complete signup
-  if(window.location.hash && window.location.hash.indexOf("invite_token") > -1 || 
-     window.location.hash.indexOf("recovery_token") > -1 ||
-     window.location.hash.indexOf("confirmation_token") > -1) {
-    ni.open();
-    return;
-  }
-  if(ni.currentUser()){gate.style.display="none";}
-  else{gate.style.display="flex";}
-  ni.on("login",function(){gate.style.display="none";ni.close();});
-  ni.on("logout",function(){gate.style.display="flex";});
-  document.getElementById("login-btn").addEventListener("click",function(){ni.open("login");});
-});
-</script>
+
+<!-- ── APP (hidden until authenticated) ──────────────────── -->
+<div id="app-wrapper">
 
 <!-- ══════════════════════════════════════════════════
      TOP NAVIGATION
@@ -9995,5 +10024,60 @@ function p2Render1Pager() {
 })();
 
 </script>
+</div><!-- end app-wrapper -->
+
+<script>
+(function() {
+  var ALLOWED = ['meni@dibbleapp.com', 'meital0401@gmail.com'];
+
+  function showApp() {
+    document.getElementById('auth-gate').classList.remove('visible');
+    document.getElementById('app-wrapper').classList.add('visible');
+  }
+
+  function showGate(error) {
+    document.getElementById('auth-gate').classList.add('visible');
+    document.getElementById('app-wrapper').classList.remove('visible');
+    if (error) {
+      var el = document.getElementById('auth-error');
+      el.textContent = error;
+      el.classList.add('visible');
+    }
+  }
+
+  // Check if already logged in
+  netlifyIdentity.on('init', function(user) {
+    if (user && ALLOWED.indexOf(user.email) !== -1) {
+      showApp();
+    } else if (user) {
+      netlifyIdentity.logout();
+      showGate('Access denied. Your account is not authorized.');
+    } else {
+      showGate();
+    }
+  });
+
+  netlifyIdentity.on('login', function(user) {
+    netlifyIdentity.close();
+    if (ALLOWED.indexOf(user.email) !== -1) {
+      showApp();
+    } else {
+      netlifyIdentity.logout();
+      showGate('Access denied. Your account (' + user.email + ') is not authorized.');
+    }
+  });
+
+  netlifyIdentity.on('logout', function() {
+    showGate();
+  });
+
+  document.getElementById('login-btn').addEventListener('click', function() {
+    netlifyIdentity.open('login');
+  });
+
+  netlifyIdentity.init();
+})();
+</script>
+
 </body>
 </html>
