@@ -545,10 +545,18 @@
 document.addEventListener("DOMContentLoaded",function(){
   var gate=document.getElementById("auth-gate");
   if(!window.location.hostname.includes("netlify.app")){return;}
-  gate.style.display="flex";
   var ni=window.netlifyIdentity;
-  ni.init();
+  // Init first — this auto-handles invite/recovery tokens in URL hash
+  ni.init({APIUrl:"https://dibble-app-business-plan.netlify.app/.netlify/identity"});
+  // If token in URL hash, open widget immediately to complete signup
+  if(window.location.hash && window.location.hash.indexOf("invite_token") > -1 || 
+     window.location.hash.indexOf("recovery_token") > -1 ||
+     window.location.hash.indexOf("confirmation_token") > -1) {
+    ni.open();
+    return;
+  }
   if(ni.currentUser()){gate.style.display="none";}
+  else{gate.style.display="flex";}
   ni.on("login",function(){gate.style.display="none";ni.close();});
   ni.on("logout",function(){gate.style.display="flex";});
   document.getElementById("login-btn").addEventListener("click",function(){ni.open("login");});
