@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dibble Financial Planning Tool</title>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <style>
     /* ─── Reset & Base ─────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -535,23 +534,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-<div id="auth-gate" style="position:fixed;inset:0;z-index:99999;background:#1a2744;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
-  <div style="background:#E5B94B;border-radius:12px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#1a2744;">d</div>
-  <h1 style="color:#fff;font-size:22px;font-weight:800;font-family:sans-serif;">dibble Business Plan</h1>
-  <p style="color:rgba(255,255,255,.5);font-size:13px;font-family:sans-serif;">Authorized access only</p>
-  <button id="login-btn" style="margin-top:8px;padding:12px 32px;background:#2ECC71;color:#1a2744;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:sans-serif;">Log in</button>
-</div>
-<script>
-document.addEventListener("DOMContentLoaded",function(){
-  var gate=document.getElementById("auth-gate");
-  var ni=window.netlifyIdentity;
-  ni.init();
-  if(ni.currentUser()){gate.style.display="none";}
-  ni.on("login",function(){gate.style.display="none";ni.close();});
-  ni.on("logout",function(){gate.style.display="flex";});
-  document.getElementById("login-btn").addEventListener("click",function(){ni.open("login");});
-});
-</script>
 
 <!-- ══════════════════════════════════════════════════
      TOP NAVIGATION
@@ -7196,24 +7178,7 @@ function pdInit() {
       if (last) last.classList.remove('print-last');
     });
 
-    // beforeprint / afterprint: physically move slides to <body>
-<div id="auth-gate" style="position:fixed;inset:0;z-index:99999;background:#1a2744;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
-  <div style="background:#E5B94B;border-radius:12px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#1a2744;">d</div>
-  <h1 style="color:#fff;font-size:22px;font-weight:800;font-family:sans-serif;">dibble Business Plan</h1>
-  <p style="color:rgba(255,255,255,.5);font-size:13px;font-family:sans-serif;">Authorized access only</p>
-  <button id="login-btn" style="margin-top:8px;padding:12px 32px;background:#2ECC71;color:#1a2744;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:sans-serif;">Log in</button>
-</div>
-<script>
-document.addEventListener("DOMContentLoaded",function(){
-  var gate=document.getElementById("auth-gate");
-  var ni=window.netlifyIdentity;
-  ni.init();
-  if(ni.currentUser()){gate.style.display="none";}
-  ni.on("login",function(){gate.style.display="none";ni.close();});
-  ni.on("logout",function(){gate.style.display="flex";});
-  document.getElementById("login-btn").addEventListener("click",function(){ni.open("login");});
-});
-</script> so Chrome
+    // beforeprint / afterprint: physically move slides to <body> so Chrome
     // starts rendering from slide 1, not from the top of the app layout.
     const _printContainer = document.createElement('div');
     _printContainer.id = 'print-root';
@@ -9976,23 +9941,6 @@ function p2Render1Pager() {
           }
         </style>
       </head><body>
-<div id="auth-gate" style="position:fixed;inset:0;z-index:99999;background:#1a2744;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
-  <div style="background:#E5B94B;border-radius:12px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#1a2744;">d</div>
-  <h1 style="color:#fff;font-size:22px;font-weight:800;font-family:sans-serif;">dibble Business Plan</h1>
-  <p style="color:rgba(255,255,255,.5);font-size:13px;font-family:sans-serif;">Authorized access only</p>
-  <button id="login-btn" style="margin-top:8px;padding:12px 32px;background:#2ECC71;color:#1a2744;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:sans-serif;">Log in</button>
-</div>
-<script>
-document.addEventListener("DOMContentLoaded",function(){
-  var gate=document.getElementById("auth-gate");
-  var ni=window.netlifyIdentity;
-  ni.init();
-  if(ni.currentUser()){gate.style.display="none";}
-  ni.on("login",function(){gate.style.display="none";ni.close();});
-  ni.on("logout",function(){gate.style.display="flex";});
-  document.getElementById("login-btn").addEventListener("click",function(){ni.open("login");});
-});
-</script>
         <div id="op-wrap">${el.outerHTML}</div>
         <script>
           window.onload = function() {
